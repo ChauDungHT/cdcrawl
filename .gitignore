@@ -6,4 +6,5 @@ __pycache__/
 .vscode/
 *.pyc
 data/raw/
+data/processed/
 log.txt
