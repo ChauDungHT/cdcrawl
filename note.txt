@@ -1,0 +1,4 @@
+cần sửa lại cách lưu file crawl
+1. sửa tên file thành articleID
+2. sửa định dạng thành json
+3. lọc nhiễu, chỉ dữ lại nội dung

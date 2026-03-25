@@ -35,11 +35,11 @@ def analyze_article_content(text_content: str) -> str:
 
     Yêu cầu định dạng JSON đầu ra (phải giữ đúng tên key):
     1. "Title": Tiêu đề chính của bài báo.
-    2. "Brief Description": Đoạn sapo hoặc mô tả ngắn gọn nội dung.
-    3. "Date of Publication": Ngày và giờ xuất bản bài viết.
-    4. "News Type": Xác định chủ đề (Ví dụ: Thời sự, Thể thao, Giáo dục, Công nghệ...).
-    5. "Article Format": Hình thức trình bày (Ví dụ: Tin ngắn, Phóng sự, Bình luận, Phân tích).
-    6. "Source Information": Các thông tin về nguồn trích dẫn dữ liệu được nhắc đến trong bài.
+    2. "BriefDescription": Đoạn sapo hoặc mô tả ngắn gọn nội dung.
+    3. "DateOfPublication": Ngày và giờ xuất bản bài viết.
+    4. "NewsType": Xác định chủ đề (Ví dụ: Thời sự, Thể thao, Giáo dục, Công nghệ...).
+    5. "ArticleFormat": Hình thức trình bày (Ví dụ: Tin ngắn, Phóng sự, Bình luận, Phân tích).
+    6. "SourceInformation": Các thông tin về nguồn trích dẫn dữ liệu được nhắc đến trong bài.
 
     Lưu ý quan trọng: 
     - Nếu thông tin nào không có trong văn bản, hãy để giá trị là null.
