@@ -2,3 +2,5 @@ cần sửa lại cách lưu file crawl
 [ ]1. sửa tên file thành articleID
 [ ]2. sửa định dạng thành json
 [ ]3. lọc nhiễu, chỉ dữ lại nội dung
+[ ]4. lưu thêm metadata như ngày tháng, tác giả, url, ...
+[ ]5. lưu backup theo id để dễ dàng truy xuất sau này
