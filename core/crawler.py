@@ -1,16 +1,30 @@
+import sys
+from pathlib import Path
+# Thêm thư mục gốc của dự án vào sys.path
+root_path = Path(__file__).resolve().parent.parent
+if str(root_path) not in sys.path:
+    sys.path.insert(0, str(root_path))
+
 import logging
 import utils.loggingConfig
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import os
+import sys
 import time
+from pathlib import Path
+import json
+
+# Thêm đường dẫn gốc dự án vào sys.path để import packages
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 # --- CONSTANTS ---
 DEFAULT_URL = "https://dantri.com.vn"
 BRAVE_EXE_PATH = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-RAW_DATA_DIR = r"D:\cdcrawl\data\raw"
-XPATH_ARTICLE_CONTENT = "//h1 | //p | //span | //a"
+RAW_DATA_DIR = r"E:\cd\cdcrawl\data\raw"
+BACKUP_DATA_DIR = r"E:\cd\cdcrawl\data\backup"
+XPATH_ARTICLE_CONTENT = "//h1 | //p | //span"
 
 def fetch_dantri_article(article_url: str = DEFAULT_URL) -> str:
     """Thực hiện kết nối và cào dữ liệu thô từ bài báo, trả về chuỗi văn bản thô."""
@@ -52,7 +66,7 @@ def fetch_dantri_article(article_url: str = DEFAULT_URL) -> str:
 
         # GIAI ĐOẠN 2: Lưu kết quả và ghi log trạng thái (Feature 43) [cite: 43]
         if raw_text:
-            name = save_raw_content(article_text_list)
+            name = save_raw_content(article_text_list, article_url)
             logging.info("Trạng thái: Crawl thành công bài viết.") # Feature 43 [cite: 43]
             return raw_text, name
         else:
@@ -67,9 +81,9 @@ def fetch_dantri_article(article_url: str = DEFAULT_URL) -> str:
             driver.quit()
             logging.info("Đã đóng trình duyệt. Kết thúc phiên làm việc.")
 
-def save_raw_content(article_data: list[str]) -> None:
-    """Lưu danh sách nội dung thu thập được vào file .txt theo số thứ tự."""
-    # Đảm bảo thư mục tồn tại (Feature 44) [cite: 44]
+def save_raw_content(article_data: list[str], url: str) -> str:
+    """Lưu danh sách nội dung thu thập được vào file .txt theo số thứ tự, kèm URL và backup."""
+    # Đảm bảo thư mục RAW tồn tại (Feature 44) [cite: 44]
     if not os.path.exists(RAW_DATA_DIR): 
         os.makedirs(RAW_DATA_DIR)
         logging.info(f"Đã tạo thư mục lưu trữ: {RAW_DATA_DIR}")
@@ -79,17 +93,62 @@ def save_raw_content(article_data: list[str]) -> None:
     new_filename = f"crawl_{existing_file_count + 1}.txt"
     full_file_path = os.path.join(RAW_DATA_DIR, new_filename)
 
+    # Chuẩn bị nội dung file
+    file_content = f"URL: {url}\n\n"
+    for text_line in article_data:
+        file_content += text_line + "\n"
+
+    # Lưu file vào RAW_DATA_DIR
     try:
         with open(full_file_path, "w", encoding="utf-8") as file_out:
-            for text_line in article_data:
-                file_out.write(text_line + "\n")
-        
-        # Log lại thời điểm lưu thành công (Feature 44) [cite: 44]
+            file_out.write(file_content)
         logging.info(f"Đã lưu dữ liệu thành công vào: {full_file_path}") 
     except IOError as io_error:
         logging.error(f"Không thể ghi file tại {full_file_path}: {io_error}")
+        return full_file_path
+
+    # Đảm bảo thư mục BACKUP tồn tại
+    if not os.path.exists(BACKUP_DATA_DIR):
+        os.makedirs(BACKUP_DATA_DIR)
+        logging.info(f"Đã tạo thư mục backup: {BACKUP_DATA_DIR}")
+
+    # Lưu file backup
+    backup_file_path = os.path.join(BACKUP_DATA_DIR, new_filename)
+    try:
+        with open(backup_file_path, "w", encoding="utf-8") as backup_file:
+            backup_file.write(file_content)
+        logging.info(f"Đã lưu file backup thành công vào: {backup_file_path}")
+    except IOError as io_error:
+        logging.error(f"Không thể ghi file backup tại {backup_file_path}: {io_error}")
+
     return full_file_path
 
+def clear_url_data():
+    """Dọn dẹp thư mục url sau khi xử lý xong."""
+    url_dir = Path(r"E:\cd\cdcrawl\data\url")
+    for file in url_dir.glob("*.json"):
+        file.unlink()
+    logging.info("Đã dọn dẹp thư mục url.")
+
+def batch_crawl():
+    """Quét thư mục url và cào dữ liệu từ tất cả file JSON."""
+    url_dir = Path(r"E:\cd\cdcrawl\data\url")
+    for json_file in url_dir.glob("*.json"):
+        logging.info(f"Đang xử lý file: {json_file.name}")
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            for item in data:
+                url = item['url']
+                logging.info(f"Đang cào URL: {url}")
+                try:
+                    fetch_dantri_article(url)
+                except Exception as e:
+                    logging.error(f"Lỗi khi cào {url}: {e}")
+                    continue
+        except Exception as e:
+            logging.error(f"Lỗi khi xử lý file {json_file}: {e}")
+    clear_url_data()
+
 if __name__ == "__main__":
-    TARGET_ARTICLE_URL = "https://dantri.com.vn/the-gioi/eo-bien-bab-el-mandeb-quan-bai-cua-iran-trong-cuoc-chien-voi-my-israel-20260321230308339.htm"
-    fetch_dantri_article(TARGET_ARTICLE_URL)
+    batch_crawl()

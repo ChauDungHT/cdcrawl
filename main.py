@@ -11,43 +11,42 @@ ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from core.crawler import fetch_dantri_article
-from core.formater import analyze_article_content, clean_gemini_json, save_processed_content
+from core.finder import ArticleFinder
+from core.crawler import batch_crawl
+from core.formater import batch_format
 
 def main():
-    """Luồng chính: Nhận URL -> Crawl dữ liệu thô -> Phân tích bằng Gemini -> Lưu kết quả JSON."""
-    logging.info('Bắt đầu chương trình chính.')
+    """
+    Luồng chính: Finder -> Crawler -> Formater
+    
+    Bước 1: Finder - Tìm kiếm và thu thập URLs
+    Bước 2: Crawler - Cào dữ liệu thô từ các URLs
+    Bước 3: Formater - Phân tích và định dạng dữ liệu bằng Gemini AI
+    """
+    logging.info('=== BẮT ĐẦU CHƯƠNG TRÌNH CHÍNH ===')
     try:
-        # Bước 1: Nhận input URL từ người dùng
-        url = input("Nhập URL bài báo Dân Trí: ").strip()
-        if not url:
-            print("URL không hợp lệ. Thoát chương trình.")
-            return
+        # === BƯỚC 1: FINDER ===
+        logging.info('Bước 1: Tìm kiếm các bài báo và lưu URLs...')
+        finder = ArticleFinder()
+        finder.fetch_urls_by_count()
+        logging.info('Hoàn thành bước 1: Finder')
 
-        # Bước 2: Gọi crawl để lấy dữ liệu thô
-        logging.info("Đang crawl dữ liệu từ URL...")
-        raw_text, name = fetch_dantri_article(url)
-        if not raw_text or not name:
-            logging.error("Không thể crawl dữ liệu. Thoát chương trình.")
-            return
+        # === BƯỚC 2: CRAWLER ===
+        logging.info('Bước 2: Cào dữ liệu thô từ các URLs...')
+        batch_crawl()
+        logging.info('Hoàn thành bước 2: Crawler')
 
-        # Bước 3: Chạy phân tích bằng Gemini
-        logging.info("Đang phân tích dữ liệu bằng Gemini AI...")
-        structured_result = analyze_article_content(raw_text, url)
-        if not structured_result:
-            logging.error("Lỗi khi phân tích dữ liệu. Thoát chương trình.")
-            return
+        # === BƯỚC 3: FORMATER ===
+        logging.info('Bước 3: Phân tích và định dạng dữ liệu bằng Gemini AI...')
+        batch_format()
+        logging.info('Hoàn thành bước 3: Formater')
 
-        cleaned_data = clean_gemini_json(structured_result)
-        if not cleaned_data:
-            logging.error("Không thể làm sạch dữ liệu JSON. Thoát chương trình.")
-            return
-
-        # Bước 4: Lưu kết quả JSON
-        save_processed_content(cleaned_data)
+        logging.info('=== HOÀN THÀNH TOÀN BỘ QUY TRÌNH ===')
+        print("✓ Quy trình xử lý dữ liệu hoàn tất thành công!")
 
     except Exception as e:
-        print(f"Lỗi trong quá trình thực thi: {e}")
+        logging.error(f'Lỗi trong quá trình thực thi: {e}')
+        print(f"✗ Lỗi: {e}")
 
 if __name__ == "__main__":
     main()

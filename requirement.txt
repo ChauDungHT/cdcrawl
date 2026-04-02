@@ -1,7 +1,18 @@
-selenium 
-webdriver-manager 
-browser-cookie3 
-python-dotenv 
-beautifulsoup4
-pandas
-google-generativeai
+# --- Selenium & Automation ---
+selenium>=4.10.0
+webdriver-manager>=4.0.0
+browser-cookie3>=0.19.1
+
+# --- Data Processing ---
+beautifulsoup4>=4.12.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# --- AI & Environment ---
+python-dotenv>=1.0.0
+google-genai>=0.3.0
+google-generativeai>=0.3.0
+
+# --- Utilities ---
+pathlib>=1.0.1
+requests>=2.31.0

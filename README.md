@@ -36,7 +36,8 @@ Dự án tuân thủ quy trình 3 giai đoạn:
 4. Cài đặt dependencies: `pip install -r requirement.txt`
 5. Đổi tên file `.env.example` thành `.env` và điền API key cho Gemini (GEMINI_API_KEY).
 6. Tạo thư mục `data` và các thư mục con `raw` và `processed`: `mkdir -p data/raw data/processed`
-7. Chạy chương trình chính: `python main.py` và nhập URL bài báo Dân Trí khi được yêu cầu.
+7. Tạo file `log.txt` để lưu log của quá trình crawl.
+8. Chạy chương trình chính: `python main.py` và nhập URL bài báo Dân Trí khi được yêu cầu.
 
 ### Sử dụng
 Chạy chương trình chính:

@@ -1,4 +1,16 @@
+# --- THIẾT LẬP LOGGING CHO searchByElement.py ---
 import logging
+
+# Thiết lập logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s: %(message)s',
+                    handlers=[
+                        logging.FileHandler('log.txt', mode='a', encoding='utf-8'),
+                        logging.StreamHandler()
+                    ])
+
+# Ghi log khi bắt đầu tìm kiếm bài báo
+logging.info('Bắt đầu tìm kiếm bài báo tại %s', 'https://dantri.com.vn/')
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,7 +29,7 @@ DEFAULT_URL = "https://dantri.com.vn/"
 XPATH_ARTICLE_CONTENT = "//h1 | //p | //span | //a"
 XPATH_PARENT = "/html/body/nav/ol/li"
 
-def generate_file_path(base_dir=r"D:\cdcrawl\data\url"):
+def generate_file_path(base_dir=r"E:\cd\cdcrawl\data\url"):
     """
     Tạo đường dẫn file đầy đủ dựa trên thời gian hiện tại.
     Đảm bảo thư mục tồn tại trước khi trả về đường dẫn.
