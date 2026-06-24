@@ -44,7 +44,7 @@ Chạy chương trình chính:
 ```bash
 python main.py
 ```
-Chương trình sẽ yêu cầu nhập URL bài báo Dân Trí, sau đó crawl dữ liệu thô, phân tích bằng Gemini AI và lưu kết quả JSON vào `data/processed/`.
+Chương trình sẽ yêu cầu nhập chủ đề và số lượng, sau đó crawl dữ liệu thô, phân tích bằng Gemini AI và lưu kết quả JSON vào `data/processed/`.
 
 ### Hướng dẫn lập trình
 - Tuân thủ Style Guide trong `.instructions/style_guide.md`.
